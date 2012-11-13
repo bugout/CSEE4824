@@ -1,0 +1,92 @@
+\documentclass[twocolumn,letterpaper,10pt]{article}
+%\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{booktabs}
+% The following is needed in order to make the code compatible
+% with both latex/dvips and pdflatex.
+\ifx\pdftexversion\undefined
+\usepackage[dvips]{graphicx}
+\else
+\usepackage{graphicx}
+\DeclareGraphicsRule{*}{mps}{*}{}
+\fi
+
+\newcommand{\naive}{na\"{\i}ve }
+
+
+\title{CSEE4824 Course Project}
+\author{Student A $<uniAAAA@columbia.edu>$\\
+  Student B $<uniBBBB@columbia.edu>$}
+\date{December 2011}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+Saadaval on mitmeid erinevaid Lorem Ipsumi variante, kuid enamik neist
+on läbi teinud muutusi kas sisestatud huumori või suvaliste sõnade tõttu,
+mis ei näe üldsegi usutavad välja. Kui te kavatsete Lorem Ipsumit kasutada,
+peate te kindel olema, et kuskil keset teksti midagi piinlikku ei ole. Kõik
+Lorem Ipsumi generaatorid kipuvad kindlaid lauseridu kordama, seega on see
+sait siin esimene tõeline Lorem Ipsumi generaator Internetis. See kasutab
+sõnastikku üle 200 ladina sõnaga ja, koos hulga lausestruktuuride mudelitega,
+toodab korralikku Lorem Ipsumit. Toodetud Lorem Ipsum on seega alati vaba
+kordustest, naljadest, ebaharilikest sõnadest jne.~\cite{clrs}.
+
+\subsection{Something}
+
+asdlfjklasdfjlkj. See Table~\ref{tab:foo}.
+
+\begin{table}[ht!]
+\begin{center}
+\begin{tabular}{lllrr}
+\toprule
+ Alg.     &  L1d miss  &  L2 miss  & \# instr  &  time ($ms$)  \\
+\midrule
+ a      &  0.09\%    &  96.86\%  &  94.35e5  &    516.16  \\
+ b      &  0.12\%    &  96.94\%  &  74.38e5  &    423.77  \\
+ c      &  0.66\%    &  96.86\%  &  15.39e7  &   84.34e2  \\
+ d      &  0.20\%    &  92.61\%  &  11.54e7  &   66.07e2  \\
+ e      &  1.49\%    &  99.50\%  &  83.98e7  &  46.23e3  \\
+ f      &  0.21\%    &  98.02\%  &  62.55e7  &  35.84e3  \\
+\bottomrule
+\end{tabular}
+\end{center}
+\caption{Sample table.\label{tab:foo}}
+\end{table}
+
+\subsection{Or Another}
+
+Vastupidiselt tavaarusaamale, Lorem Ipsum ei ole lihtsalt suvaline tekst.
+~(Figure~\ref{fig:alg}.)
+
+\begin{figure}[htb]
+\centering
+\begin{lstlisting}
+while (1) {
+  a = a \% b;
+  if (a == 0)
+    return b;
+}
+\end{lstlisting}
+\caption{\label{fig:alg}Some code snippet.}
+\end{figure}
+
+\section{Conclusion}
+
+Lorem Ipsum on lihtsalt proovitekst, mida kasutatakse printimis- ja
+ladumistööstuses. See on olnud tööstuse põhiline proovitekst juba alates
+1500. aastatest, mil tundmatu printija võttis hulga suvalist teksti, et
+teha trükinäidist. Lorem Ipsum ei ole ainult viis sajandit säilinud, vaid on
+ka edasi kandunud elektroonilisse trükiladumisse, jäädes sealjuures peaaegu
+muutumatuks. See sai tuntuks 1960. aastatel Letraset'i lehtede väljalaskmisega,
+ja hiljuti tekstiredaktoritega nagu Aldus PageMaker, mis sisaldavad erinevaid
+Lorem Ipsumi versioone.
+
+\bibliographystyle{plain}
+\bibliography{refs}
+
+\end{document}
