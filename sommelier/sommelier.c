@@ -13,10 +13,10 @@
 
 #define SMALL_M		20
 #define SMALL_N		5
-#define MEDIUM_M	100
+#define MEDIUM_M	71
 #define MEDIUM_N	2
-#define LARGE_M		211
-#define LARGE_N		5
+#define LARGE_M		201
+#define LARGE_N		2
 
 static const char progname[] = "sommelier";
 
