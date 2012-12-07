@@ -9,7 +9,7 @@
 #include "smat.h"
 #include "parallel.h"
 
-#define NUM_THREADS 4
+#define NUM_THREADS 2
 #define BLOCK_SIZE 32
 
 inline int min(int a, int b) {
@@ -41,6 +41,40 @@ void smat_mult(const struct smat *a, const struct smat *b, struct smat *r)
 	}
 }
 
+
+void smat_vect_t(void* args) {
+  struct work_struct *s = args;
+
+  int i, j;
+  double** adata = s->matrix;
+  double* vdata = s->matrixb[0];
+  double* rdata = s->result[0];
+
+  memset(rdata, 0, sizeof(double) * size);
+
+  for (i = 0; i < s->end_row; i++) {
+    double t = 0;
+    for (j = 0; j < size; j++)
+      t += (adata[i][j] * vdata[j]);
+    rdata[i] += t;
+  }
+
+
+  int i, j;
+  const struct smat* a = s->matrix;
+  const struct smat* b = s->matrixb;
+  struct smat* r = s->result;
+
+  for (i = s->start_row; i < s->end_row; i++)
+    for (j = 0; j < a->cols; j++)
+      r->data[i][j] = a->data[i][j] + b->data[i][j];
+
+  if (s->id)
+    job_exit();
+}
+
+
+
 /*
  * Matrix-vector multiplication, r = a x v
  * NOTE: a is the matrix, v is the vector. This means v->cols is always 1.
@@ -49,22 +83,6 @@ void smat_mult(const struct smat *a, const struct smat *b, struct smat *r)
 void smat_vect(const struct smat *a, const struct smat *v, struct smat *r)
 {
   
-  int jj, i, j;
-  double** adata = a->data;
-  double* vdata = v->data[0];
-  double* rdata = r->data[0];
-
-  int size = a->rows;
-
-  memset(rdata, 0, sizeof(double) * size);
-
-  for (jj = 0; jj < size; jj+=BLOCK_SIZE)
-    for (i = 0; i < size; i++) {
-      double t = 0;
-      for (j = jj; j < min(jj+BLOCK_SIZE, size); j++)
-	t += (adata[i][j] * vdata[j]);
-      rdata[i] += t;
-    }
       
 }
 

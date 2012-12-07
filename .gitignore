@@ -1,4 +1,8 @@
+temp.conf
+test.conf
 workspace
 utils
 w4824-*
 *.bz2
+*.o
+*.mat
