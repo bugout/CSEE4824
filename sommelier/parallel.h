@@ -1,5 +1,5 @@
-#ifndef _JOB_API_EXAMPLE_H_
-#define _JOB_API_EXAMPLE_H_
+#ifndef _PARALLEL_H_
+#define _PARALLEL_H_
 
 #include "smat.h"
 
@@ -10,12 +10,12 @@
 #endif
 
 struct work_struct {
-  const struct smat* matrix;
-  const struct smat* matrixb;
+  const struct smat* amat;
+  const struct smat* bmat;
   struct smat* result;
+  int size;
   int start_row;
   int end_row;
-  double factor;
   int id;
 #ifndef SESC
   pthread_t pthread;
