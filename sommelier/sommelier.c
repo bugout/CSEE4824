@@ -225,9 +225,9 @@ int main(int argc, char *argv[])
 	for (i = 0; i < n_matrices; i++) {
 		b = &matrices[i + 1];
 		__smat_mult(a, b, r1);
-		//		__smat_scale(a, &alphas[i], r2);
-		//		__smat_add(r1, r2, r3);
-		//		__smat_vect(r3, &vectors[i], v1);
+		__smat_scale(a, &alphas[i], r2);
+		__smat_add(r1, r2, r3);
+		__smat_vect(r3, &vectors[i], v1);
 		a = r3;
 	}
 

@@ -9,7 +9,9 @@
 #include "smat.h"
 #include "parallel.h"
 
-#define NUM_THREADS 4
+#define LOOP_UNROLLING
+#define UNROLLING_SIZE 1
+#define NUM_THREADS 2
 #define BLOCK_SIZE 400
 
 inline int min(int a, int b) {
@@ -49,16 +51,39 @@ void smat_mult_t(void* args) {
 
   for (i = s->start_row; i < s->end_row; i++)
     memset(rdata[i], 0, size * sizeof(double));
+
   
   for (jj = 0; jj < size; jj += BLOCK_SIZE)
     for (kk = 0; kk < size; kk += BLOCK_SIZE)
-      for (i = s->start_row; i < s->end_row; i++)
-	for (j = jj; j < min(jj+BLOCK_SIZE,size); j++) {
+      for (i = s->start_row; i < s->end_row; i++) {
+	double *a = adata[i];
+	int jend = min(jj+BLOCK_SIZE, size);
+	int kend = min(kk+BLOCK_SIZE, size);
+	for (j = jj; j < jend; j++) {
+	  double *b = bdata[j];
+	  double *r = rdata[i];
+
 	  t = 0;
-	  for (k = kk; k < min(kk+BLOCK_SIZE,size); k++)
-	    t = t + adata[i][k] * bdata[j][k];
-	  rdata[i][j] = rdata[i][j] + t;
+	  int offset = (kend - kk) & (UNROLLING_SIZE - 1);    
+	  for (k = kk; k < kk + offset; k++)
+	    t = t + a[k] * b[k];
+
+	  for (k = kk  + offset; k < kend; k+=UNROLLING_SIZE) {
+	    t = t + a[k] * b[k];
+
+#ifdef LOOP_UNROLLING_2
+	    t += (a[k+1] * b[k+1]);
+#endif
+
+#ifdef LOOP_UNROLLING_4
+	    t += (a[k+1] * b[k+1]);
+	    t += (a[k+2] * b[k+2]);
+	    t += (a[k+3] * b[k+3]);
+#endif
+	  }
+	  r[j] = r[j] + t;
 	}
+      }
 
   if (s->id)
     job_exit();
@@ -127,8 +152,28 @@ void smat_vect_t(void* args) {
 
   for (i = s->start_row; i < s->end_row; i++) {
     double t = 0;
-    for (j = 0; j < size; j++)
-      t += (adata[i][j] * vdata[j]);
+    double *a = adata[i];
+
+    int offset = s->size & (UNROLLING_SIZE - 1);
+
+    for (j = 0; j < offset; j++)
+      t += (a[j] * vdata[j]);
+
+    for (j = offset; j < size; j+=UNROLLING_SIZE) {
+
+      t += (a[j] * vdata[j]);
+#ifdef LOOP_UNROLLING_2
+      t += (a[j+1] * vdata[j+1]);
+#endif
+
+#ifdef LOOP_UNROLLING_4
+      t += (a[j+1] * vdata[j+1]);
+      t += (a[j+2] * vdata[j+2]);
+      t += (a[j+3] * vdata[j+3]);
+#endif
+
+    }
+
     rdata[i] = t;
   }
 
@@ -187,9 +232,31 @@ void smat_add_t(void* args) {
   double** bdata = s->bmat->data;
   double** rdata = s->result->data;
 
-  for (i = s->start_row; i < s->end_row; i++)
-    for (j = 0; j < s->size; j++)
-      rdata[i][j] = adata[i][j] + bdata[i][j];
+  for (i = s->start_row; i < s->end_row; i++) {
+    double *r = rdata[i];
+    double *a = adata[i];
+    double *b = bdata[i];
+
+    int offset = s->size & (UNROLLING_SIZE - 1);
+
+    for (j = 0; j < offset; j++)
+      r[j] = a[j] + b[j];
+
+    for (j = offset; j < s->size; j+=UNROLLING_SIZE) {
+
+      r[j] = a[j] + b[j];
+#ifdef LOOP_UNROLLING_2
+      r[j+1] = a[j+1] + b[j+1];
+#endif
+
+#ifdef LOOP_UNROLLING_4
+      r[j+1] = a[j+1] + b[j+1];
+      r[j+2] = a[j+2] + b[j+2];
+      r[j+3] = a[j+3] + b[j+3];
+#endif
+    }
+      
+  }
 
   if (s->id)
     job_exit();
@@ -242,9 +309,30 @@ void smat_scale_t(void* args) {
   double factor = s->bmat->data[0][0];
   double** rdata = s->result->data;
 
-  for (i = s->start_row; i < s->end_row; i++)
-    for (j = 0; j < s->size; j++)
-      rdata[i][j] = adata[i][j] * factor;
+  for (i = s->start_row; i < s->end_row; i++) {
+    double *r = rdata[i];
+    double *a = adata[i];
+
+    int offset = s->size & (UNROLLING_SIZE - 1);    
+
+    // process [0, offset)
+    for (j = 0; j < offset; j++)
+      r[j] = a[j] * factor;
+
+    // process UNROLLING_SIZE elements at a time
+    for (j = offset; j < s->size; j += UNROLLING_SIZE) {      
+      r[j] = a[j] * factor;
+#ifdef LOOP_UNROLLING_2
+      r[j+1] = a[j+1] * factor;
+#endif
+
+#ifdef LOOP_UNROLLING_4
+      r[j+1] = a[j+1] * factor;
+      r[j+2] = a[j+2] * factor;
+      r[j+3] = a[j+3] * factor;
+#endif
+    }
+  }
 
   if (s->id)
     job_exit();
