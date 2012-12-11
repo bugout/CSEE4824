@@ -9,6 +9,7 @@
 \usepackage[dvips]{graphicx}
 \else
 \usepackage{graphicx}
+\usepackage{algorithms}
 \DeclareGraphicsRule{*}{mps}{*}{}
 \fi
 
@@ -16,8 +17,8 @@
 
 
 \title{CSEE4824 Course Project}
-\author{Student A $<uniAAAA@columbia.edu>$\\
-  Student B $<uniBBBB@columbia.edu>$}
+\author{Danqing Hua $<dh2604@columbia.edu>$\\
+  Jiacheng Yang $<jy2522@columbia.edu>$}
 \date{December 2011}
 
 \begin{document}
@@ -74,6 +75,57 @@ while (1) {
 \end{lstlisting}
 \caption{\label{fig:alg}Some code snippet.}
 \end{figure}
+
+\section{Software Optimization}
+
+Among the four operations, namely scaling, addition, vector
+multiplication and matrix multiplication, we focus our optimization to
+matrix multiplication, because it has the highest computational
+complexity $O(n^3)$. Amdahl's law suggests us that we need to improve
+the dominant operation to achieve significant speed-up.
+
+So our following discussion will focus on the matrix
+multiplication. We will quickly review the techniques we use to
+optimizing the other three operations as well at the end of this section.
+
+\subsection{Loop Ordering}
+First of all, for matrix multiplication, there are mutliple ways to order the
+loops. We choose the i,j,k ordering in our implementation, because
+we are able to use a register to store the temporary result
+$r(i,j)$. Other ordering may enable us to reference elements in input
+matrix A or B by register. However, in general writing memory is less
+efficient than reading from memory, so it's better for us save the
+writing to register. We also benefit from spatial locality in both
+matrices after we transpose matrix $B$.
+
+\subsection{Transpose Matrix B}
+
+\begin{algorithmic}
+  \FOR {$i = 1 \to size$}
+  \FOR {$j = 1 to size$}
+  \STATE $t \gets 0$
+  \FOR {$k = 1 to size$}
+      \STATE $t = t + a[i][k] * b[k][j]$
+  \ENDFOR
+  \STATE $r[i][j] = t$
+  \ENDFOR
+  \ENDFOR
+\end{algorithmic}
+
+\subsection{Register Reusing}
+
+
+
+\subsection{Loop Unrolling}
+Since we are not allowed to use any compiler optimization, we have to
+do loop unrolling ourselves. Loop unrolling has at least the following
+two advantages: (1) reduce branches (2) use registers to avoid memory
+access.
+
+\subsection{Cache Blocking}
+\subsection{Multi-threading}
+
+\subsection{Optimizing other operations}
 
 \section{Conclusion}
 

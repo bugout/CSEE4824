@@ -1,0 +1,243 @@
+#BEGIN Configuration used. Extracted from "confs/test.conf":
+procsPerNode=1
+pageSize  =4096
+technology='techParam'
+cpucore   ='SmallCore'
+NoMigration=false
+[NoMSHR]
+size      =128
+bsize     =64
+type      ='none'
+[ALUIssueSmall]
+Occ       =1
+Num       =1
+[DL1CacheSmall]
+MSHR      ='dMSHRSmall'
+WrMissEnergy=4.795354e+00
+RdHitEnergy=2.397677e+00
+replPolicy='LRU'
+lowerLevel="L1L2DBus L1L2D shared"
+portOccp  =2
+hitDelay  =1
+assoc     =2
+RdMissEnergy=4.795354e+00
+WrHitEnergy=2.397677e+00
+size      =32768
+bsize     =64
+numPorts  =2
+writePolicy='WB'
+missDelay =2
+deviceType='cache'
+[FXITLBSmall]
+RdHitEnergy=3.707561e-01
+size      =512
+bsize     =8
+WrMissEnergy=7.415121e-01
+assoc     =4
+deviceType='cache'
+replPolicy='LRU'
+WrHitEnergy=3.707561e-01
+RdMissEnergy=7.415121e-01
+[SmallCore]
+windowCheckEnergy=5.835786e-02
+stqCheckEnergy=1.352023e-01
+itlb      ='FXITLBSmall'
+OSType    ='dummy'
+bpred     ='BPredIssueX'
+instrSource="IL1CacheSmall IL1Small"
+stqRdWrEnergy=4.372955e+00
+instQueueSize=8
+ldqRdWrEnergy=4.238127e+00
+btbEnergy =4.423364e-01
+maxIRequests=4
+dataSource="DL1CacheSmall DL1Small"
+areaFactor=1.006250e+00
+windowRdWrEnergy=4.241218e-01
+dtlb      ='FXDTLBSmall'
+interClusterLat=2
+maxLoads  =32
+retireWidth=5
+robSize   =68
+cluster[1:1]='FPClusterIssueSmall'
+cluster   ='FXClusterIssueSmall'
+windowSelEnergy=8.202051e-03
+resultBusEnergy=3.709721e-02
+inorder   =false
+ldqCheckEnergy=1.732559e-01
+bpredEnergy=1.844586e-01
+stForwardDelay=2
+fetchWidth=4
+renameEnergy=4.646276e-01
+forwardBusEnergy=3.709721e-02
+issueWidth=4
+regFileDelay=3
+intRegs   =68
+bb4Cycle  =1
+maxStores =24
+wrRegEnergy=8.575796e-01
+renameDelay=3
+maxBranches=16
+rdRegEnergy=8.575796e-01
+decodeDelay=6
+robEnergy =1.775859e-01
+fpRegs    =68
+enableICache=true
+rasEnergy =1.639768e-01
+fpALUEnergy=1.047439e+00
+iALUEnergy=3.417957e-01
+[IL1CacheSmall]
+assoc     =2
+MSHR      ='iMSHRSmall'
+writePolicy='WT'
+portOccp  =1
+size      =16384
+WrMissEnergy=3.205716e+00
+RdMissEnergy=3.205716e+00
+deviceType='icache'
+numPorts  =2
+hitDelay  =1
+WrHitEnergy=1.602858e+00
+RdHitEnergy=1.602858e+00
+lowerLevel="L1L2IBus L1L2I shared"
+replPolicy='LRU'
+missDelay =1
+bsize     =64
+[FXDTLBSmall]
+assoc     =4
+replPolicy='LRU'
+RdHitEnergy=3.707561e-01
+deviceType='cache'
+bsize     =8
+WrHitEnergy=3.707561e-01
+RdMissEnergy=7.415121e-01
+size      =512
+WrMissEnergy=7.415121e-01
+[FXClusterIssueSmall]
+iStoreLat =1
+iStoreUnit='LDSTIssueSmall'
+wakeupDelay=3
+iDivLat   =12
+iLoadLat  =1
+schedDelay=1
+iALULat   =1
+schedPortOccp=1
+schedNumPorts=4
+wakeUpPortOccp=1
+iMultLat  =4
+recycleAt ='Execute'
+iMultUnit ='ALUIssueSmall'
+iLoadUnit ='LDSTIssueSmall'
+iBJLat    =1
+iDivUnit  ='ALUIssueSmall'
+iALUUnit  ='ALUIssueSmall'
+winSize   =48
+wakeUpNumPorts=4
+iBJUnit   ='ALUIssueSmall'
+[FPClusterIssueSmall]
+fpDivUnit ='FPIssueSmall'
+wakeUpPortOccp=1
+fpMultUnit='FPIssueSmall'
+schedDelay=1
+schedNumPorts=4
+wakeUpNumPorts=4
+recycleAt ='Execute'
+fpALUUnit ='FPIssueSmall'
+fpALULat  =1
+winSize   =8
+wakeupDelay=3
+schedPortOccp=1
+fpMultLat =2
+fpDivLat  =10
+[Memory]
+deviceType='niceCache'
+WrMissEnergy=0.000000e+00
+lowerLevel='voidDevice'
+MSHR      ='NoMSHR'
+bsize     =64
+replPolicy='LRU'
+size      =64
+RdHitEnergy=0.000000e+00
+portOccp  =1
+hitDelay  =20
+assoc     =1
+missDelay =20
+numPorts  =1
+RdMissEnergy=0.000000e+00
+WrHitEnergy=0.000000e+00
+[L2Cache]
+replPolicy='LRU'
+lowerLevel="MemoryBus memoryBus"
+missDelay =2
+assoc     =8
+bankPortOccp=1
+RdHitEnergy=8.791096e+00
+RdMissEnergy=1.758219e+01
+WrMissEnergy=1.758219e+01
+portOccp  =1
+nBanks    =2
+numPorts  =1
+WrHitEnergy=8.791096e+00
+bankNumPorts=1
+hitDelay  =3
+bsize     =64
+inclusive =false
+deviceType='cache'
+writePolicy='WB'
+size      =1048576
+MSHR      ='L2MSHR'
+[L1L2IBus]
+lowerLevel="L2Cache L2"
+numPorts  =1
+deviceType='bus'
+portOccp  =1
+delay     =1
+[dMSHRSmall]
+size      =64
+type      ='single'
+bsize     =64
+[BPredIssueX]
+MetaBits  =2
+btbSize   =2048
+btbReplPolicy='LRU'
+btbAssoc  =2
+l2size    =16384
+historySize=11
+localBits =2
+type      ='hybrid'
+rasSize   =32
+BTACDelay =0
+localSize =16384
+btbBsize  =1
+Metasize  =16384
+l2Bits    =1
+[L2MSHR]
+type      ='single'
+bsize     =64
+size      =64
+[L1L2DBus]
+delay     =1
+portOccp  =1
+numPorts  =1
+deviceType='bus'
+lowerLevel="L2Cache L2"
+[iMSHRSmall]
+size      =32
+bsize     =64
+type      ='single'
+[MemoryBus]
+lowerLevel="Memory memory"
+portOccp  =1
+delay     =0
+numPorts  =1
+deviceType='bus'
+[FPIssueSmall]
+Num       =1
+Occ       =1
+[LDSTIssueSmall]
+Num       =1
+Occ       =1
+[techParam]
+frequency =2000000000
+[voidDevice]
+deviceType='void'
+#END Configuration used. Extracted from "confs/test.conf":
