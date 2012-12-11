@@ -13,7 +13,7 @@
 #define UNROLLING_SIZE 4
 #define J_UNROLLING_SIZE 3
 #define NUM_THREADS 2
-#define BLOCK_SIZE 80 // 2 * (block_size) ^2 * wordsize = L1 cache
+#define BLOCK_SIZE 400 // 2 * (block_size) ^2 * wordsize = L1 cache
 
 
 inline int min(int a, int b) {
