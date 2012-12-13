@@ -1,15 +1,11 @@
 sommelier
 ---------
-[ Mention here relevant source files that you added, and add a brief comment
-  for each of them ("brief" means not more than one line).  Mark which one
-  gives the best results.  NOTE: Do not discuss your results here! Leave
-  your insightful comments for the report. ]
+parallel.h
+parallel.c
 
 results
 -------
-[ You should include in that directory the result files produced by SESC
-  when run with your best configuration on the small, medium and large tests.
-  The configuration file used for these tests (which is the same for the
-  three of them) should be included as well. ]
-
+We have two configurations:
+(1) Best single-core: under 'single' directory
+(2) Best dual-core: under 'multi' directory
 

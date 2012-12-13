@@ -9,14 +9,16 @@
 #include <pthread.h>
 #endif
 
+// a thread structure shared by
+// all four operations
 struct work_struct {
-  const struct smat* amat;
-  const struct smat* bmat;
-  struct smat* result;
-  int size;
-  int start_row;
-  int end_row;
-  int id;
+  const struct smat* amat; // input matrix A
+  const struct smat* bmat; // input matrix B
+  struct smat* result; // output matrix R
+  int size; // size of the matrix
+  int start_row; // starting row of a thread
+  int end_row; // end row of a thread
+  int id; // thread id
 #ifndef SESC
   pthread_t pthread;
 #endif /* !SESC */
@@ -70,4 +72,4 @@ static inline void job_exit(void)
 
 #endif /* SESC */
 
-#endif /* _JOB_API_EXAMPLE_H_ */
+#endif /* _PARALLEL_H_ */

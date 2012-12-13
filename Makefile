@@ -19,7 +19,6 @@ tarball: tarclean
 	cp $(REPORT)/report.pdf $(DIRNAME)
 	cp -r $(RESULTS) $(DIRNAME)
 	cp README* $(DIRNAME)
-	-cp -r .git $(DIRNAME)
 	tar -cjf $(TARNAME) $(DIRNAME)
 endif
 
