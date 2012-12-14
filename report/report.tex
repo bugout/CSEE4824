@@ -75,7 +75,7 @@ we can use a register to store the temporary result
 $r(i,j)$. Other ordering may enable us to reference elements in input
 matrix A or B by registers. However, in general memory write is more
 costly than memory read, so it's better for us to buffer the
-write into a register. Within this ordering, we also benefit from
+write into a register. With this ordering, we also benefit from
 spatial locality in both input matrices after we transpose matrix $B$.
 
 \subsection{Transpose Matrix B}
@@ -124,41 +124,39 @@ The reason for this degradation is that the miss penalty of L1 miss
 is too small. Even if we use a huge L2 cache with 1M cache size, the
 access time to this cache is only 2-3 cycles. Meanwhile, such a small miss
 penalty is very likely to be hidden by instruction-level
-parallelism. We tried to optimize cache blocking for alleviate L2
-cache miss, however, it seems that L2 miss is also the bottleneck of
-our performance, at least in our experiment.
+parallelism. We also tried to optimize cache blocking to alleviate L2
+cache miss. However, it seems that L2 miss is also not the bottleneck of
+our performance, at least from our experiment (see Section ~\ref{sec:design}).
 
-In fact, cache blocking actually counteract with the advantage of
-register reusing. We have to write the result matrix multiples times
-with cache blocking. Similar observation is found in
+In fact, cache blocking counteracts with the advantage of
+register reusing. We have to write the result matrix multiple times
+with cache blocking. Similar conclusion can be found in
 ~\cite{revisited}, it suggests to trade L1 reuse for register utilization.
 
 We verify our idea by increasing the access time of L2 cache (instead
-of using the given formula). Our experiment shows that with the
-increased miss penalty, cache blocking becomes more important (see
-Section ~\ref{sec:exp}).
+of using the given formula). With increased miss penalty, cache
+blocking version becomes more efficient (see Section ~\ref{sec:exp}).
 
 \subsection{Multi-threading}
-We use multi-threading to achieve thread-level parallelism
-.We evenly partition the rows of
+We use multi-threading to achieve thread-level parallelism. We evenly partition the rows of
 the output matrix. Each thread works to compute the rows
 that are assigned to it. There is neither skewness nor race condition in such
-partition. Our experiment in Section ~\ref{sec:exp} shows that our multi-threading implementation has a linear speed-up.
+partition. Our experiment in Section ~\ref{sec:exp} shows that our multi-threading implementation achieves a linear speed-up.
 
 \subsection{Optimizing other operations}
 The techniques used to optimize the other three operations are
 basically the same as matrix multiplication, namely loop unrolling,
 register reusing and multi-threading.
 
-What's worth a mention is that the access pattern of these three
+What's worth mentioning is that the access pattern of these three
 operations are simple. For
 scaling and addition, data is read only once, so there is no
 temporal locality here, but we benefit from spatial locality
-especially when cache-line size is large.
+especially when the cache-line size is large.
 
 For matrix-vector multiplication, the matrix is read once, while the
 vector is read multiple times. But the vector size in the large test
-case is only 201. Suppose one cache-line is kept for the matrix, and one cache line
+case is only 201. Suppose one cache line is left for the matrix, and one cache line
 is left for the output vector. Our L1 cache is big enough to hold the
 entire vector. Thus, we do not optimize specifically for the cache
 behavior of matrix-vector multiplication.
@@ -200,17 +198,17 @@ Out-order     &  1G &  1  &    594 & 14.3 \\
 The power of out-of-order execution is much higher than in-order execution. In-order execution
 consumes less power because most of its time is spent on stall. From
 the detailed power consumption, we can tell that a
-large part of its power is spent on clock instead of on execution. So using in-order execution
-actually wastes more power. Thus, we adhere our following exploration to out-of-order execution.
+large part of its power is spent on clock instead of on execution. So
+power utilization of in-order exeuction is actually lower. Thus, we adhere our following exploration to out-of-order execution.
 
 \paragraph{Issue width:} Issue width influences the instruction-level
-parallelism we can achieve. So we guess that the larger is the issue width,
-the better the performance is.
+parallelism we can achieve. We speculates that a larger issue width
+will give us better performance.
 
-On an moderate size test case, we fix all other parameters and vary the issue
+On a moderate size test case, we fix all other parameters and vary the issue
 width. The result in Figure ~\ref{fig:issue} shows that as the issue width
-increases, the execution time decreases. But after issue width
-increases over 4, the execution time stops improving on all types of cores. We conclude that the
+becomes larger, the execution is faster. But after issue width
+is larger than 4, the performance stops improving on all types of cores. We conclude that the
 instruction-level parallelism is fully exploited in such cases. Continuing
 increasing issue width will only increase the cost of maintenance, such as the access time to the re-order buffers.
 
@@ -222,18 +220,17 @@ increasing issue width will only increase the cost of maintenance, such as the a
 \caption{Simulation time V.S issue width}
 \end{figure}
 
-\paragraph{Type of cores:} Each type of core varies by their number of
-execution units and ROB size. At a first glance, large core may be the
+\paragraph{Type of cores:} At a first glance, large core may be the
 first choice, as it carries more powerful functional units. However,
-we also have to lower the frequency to meet the power
+we have to lower the frequency to meet the power
 constraint. There is no clear good or bad in choosing the type of
-cores. Each core combining with appropriate issue width and frequency
-may meet the power constraint while preserve a good performance. But some
+cores. Each type of core can achieve a good performance with
+appropriate parameters. Some
 preliminary experiments let us prefer SmallCore and MidCore because
-they usually have a competitive performance within a reasonable power budget. 
+of their relative high performance/power efficiency.
 
-We dismiss the idea for a heterogeneous multi-core architecture in
-this project, because the workload is partitioned into equal size. It
+We dismiss the idea for a heterogeneous multi-core architecture,
+because this workload can be partitioned into equal size. It
 doesn't make sense to bias one thread or another by giving it a more
 powerful core.
 
@@ -242,9 +239,9 @@ high as possible within the power constraint. So we usually tune the
 frequency after all other parameters are fixed.
 
 \subsection{Multi-core}
-Our experiment in Section ~\ref{sec:exp} shows
-that our program has a linear speed-up. So introducing more
-cores, presumably is better. But considering the power constraint, we
+Our experiment shows
+that our program has a linear speed-up. So having more
+cores presumably is better. Considering the power constraint, we
 focus on a dual-core architecture to illustrate what is new in
 a multi-core architecture.
 
@@ -287,15 +284,15 @@ power. Enlarging L2 cache seems to come for free. We vary the size of
 L2 cache from 16K to 1M, the power remains stable, and the access
 time is within 3 cycles. The total size of three matrices is $201 *
 201 * 3 * 8 = 946K$, so a 1M L2 cache can hold almost every
-data. Misses in L2 cache in this case are due to compulsory misses during matrix generation or conflict
-misses.
+data. Misses in L2 cache in this case are due to compulsory misses
+during matrix generation or conflict misses.
 
 Furthermore, we notice that the size of L2 actually doesn't have much
 impact on our performance. Having a 16K L2 cache only leads to a
 6\% performance drop versus 256K L2 in our final configuration (from
 100 msec to 106 msec). We assume it is because the
 access time to memory in the simulator is small, and the DRAM access
-is small due to our optimization.
+is low with our optimization.
 
 \subsubsection{Cache block size}
 Because almost all reads are sequential in this workload, we prefer a larger cache-line size. We set the block size to 64
@@ -383,7 +380,7 @@ Unrolling & time & L1 miss  & L2 miss & Speedup \\
 \midrule
 None & 10.211 & 1.93 & 5.04	& 1.3 \\
 1 & 6.821 & 1.81 & 5.08 & 1.38 \\
-2 & 6.515 & 1.78 & 5.08 & 1.4 \\
+2 & \textbf{6.515} & 1.78 & 5.08 & \textbf{1.4} \\
 3 &	6.59 & 1.64	& 5.08 & 1.42 \\
 \bottomrule
 \end{tabular}
@@ -395,20 +392,17 @@ None & 10.211 & 1.93 & 5.04	& 1.3 \\
 
 \subsection{Multi-threading}
 
-We test the scalability of our multi-threading program. In this
-experiment, we ignore the power constraint: we just assign more cores
-and study the speedup.The time we report is the time without start-up time (matrix generation, etc). Our basic
-configuration is $n$ MidCore with issue width 2, we vary $n$. Each core
+We test the scalability of our multi-threading program. Our configuration is $n$ MidCore with issue width 2, we vary $n$. Each core
 has 16K L1 Instruction cache and 32K L1 Data cache. The L2 shared
 cache is 256K. We use out-of-order execution and set the frequency to
-1.8GHz. We run this test on medium.
+1.8GHz. We run this test on medium (we substract the start-up time in
+the main function).
 
-When we scale the number of threads from 1 to 4, it has almost a linear
-scale-up. When the number of threads reaches 8, the speedup a sub-linear
-scale-up. Adding more threads will saturate common memory bus, and
-increases coordination cost. And we will suffer from skewness, i.e. the
-execution is limited by the slowest thread. So we cannot have linear
-scale-up with too many threads.
+When we scale the number of cores from 1 to 4, it has a linear
+scale-up. When the number of threads reaches 8, the speedup a
+sub-linear. Adding more threads increases coordination cost and will
+saturate common memory bus if the program is bound by memory bandwidth. And we will suffer from skewness, i.e. the
+execution is limited by the slowest thread. So we cannot scale up linearly with too many threads.
 
 \begin{figure}[ht!]
 \centering
@@ -439,7 +433,7 @@ Block size & 64 & 64 \\
 \bottomrule
 \end{tabular}
 \end{center}
-\caption{Configurations for Single-core and Multi-core architecture}
+\caption{Final configurations}
 \label{table:config}
 \end{table}
 
@@ -490,23 +484,21 @@ our algorithm design is scalable with the number of cores.
 \label{sec:conclude}
 
 In this report, we summarize our techniques to optimize matrix
-operations for the given workload. We use pre-processing, software loop-unrolling,
+operations. We use pre-processing, software loop-unrolling,
 register reusing to enhance the execution of single thread
-execution. We investigate cache-aware matrix multiplication and their
-impact on our system's performance. We apply multi-threading to
-parallelize all the operations and we experimentally show that we
-achieve a nearly-linear scale-up when the number of cores is less than 8.
+execution. We apply multi-threading to
+parallelize all four operations and achieve a linear scale-up.
 
 We systematically explore the design space, finding out the best
-architecture for both uni-core architecture and dual-core
+architecture for both uni-core and dual-core
 architecture. Instead of enumerating all possibilities in the design
 space, our search is guided by our understanding in architecture
-concept, so we greatly reduce the search space.
+concept.
 
 Finally, we experimentally verify our design and quantify the speedup
 in our software optimization.
 
-\bibliographystyle{plain}
+\bibliographystyle{abbrv}
 \bibliography{refs}
 
 \end{document}
